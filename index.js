@@ -2,39 +2,62 @@
 
 class Market {
 
-  constructor(name, minLevel, maxLevel) {
+  constructor(name, midPrice) {
     this.name = name;
-    this.openingLevel = random(minLevel, maxLevel);
-    (function loop(){
-      this.setData(minLevel, maxLevel);
-      setTimeout(loop.bind(this), this.getIntervalSpeed.call(this));
-    }.bind(this)());
-
+    this.opening = midPrice;
+    loop(this.setData, getTickSpeed, this);
   }
 
-  setData(minLevel, maxLevel) {
-    this.buyPrice = random(minLevel, maxLevel);
-    this.sellPrice = random(this.buyPrice - 10, this.buyPrice - 1);
-    if (!this.low || this.low < this.sellPrice) {
-      this.low = this.sellPrice;
-    }
-
-    if (!this.high || this.high < this.buyPrice) {
-      this.high = this.buyPrice;
-    }
-
-    this.percentage = getPercentage(minLevel, maxLevel, this.buyPrice);
-    this.change = (this.openingLevel - this.buyPrice).toFixed(1);
-    this.updateTime = time();
+  setData() {
+    const priceDistance = random(0.1, 5) / 2;
+    const midPrice = +(or(this.buy, this.sell) || this.opening);
+    this.buy = getBuy(midPrice, priceDistance);
+    this.sell = getSell(midPrice, priceDistance);
+    this.low = getLow(this.low, this.sell);
+    this.high = getHigh(this.high, this.buy);
+    this.change = getChange(this.opening, this.buy);
+    this.changePercentage = getPercentage(this.opening, this.change);
+    this.updateTime = getUpdateTime();
+    console.log(this);
   }
 
-  getIntervalSpeed() {
-    this.intervalSpeed = random(500, 2500);
-    this.volPercentage = getPercentage(100, 500, this.intervalSpeed);
-    this.volDecimal = this.volPercentage / 100;
-    return this.intervalSpeed;
-  }
+}
 
+function loop(func, speedFunc, context) {
+  (function tick() {
+    func.call(context);
+    setTimeout(tick, speedFunc());
+  }.bind(context)());
+}
+
+function getTickSpeed() {
+  return random(500, 2500);
+}
+
+function getBuy(midPrice, priceDistance) {
+  return +(midPrice + priceDistance).toFixed(2);
+}
+
+function getSell(midPrice, priceDistance) {
+  return +(midPrice - priceDistance).toFixed(2);
+}
+
+function getChange(opening, buy) {
+  return +(opening - buy).toFixed(2);
+}
+
+function getLow(low, sell) {
+  if (!low) {
+    return sell;
+  }
+  return sell < low ? sell : low;
+}
+
+function getHigh(high, buy) {
+  if (!high) {
+    return buy;
+  }
+  return buy > high ? buy : high;
 }
 
 function pad(num) {
@@ -42,18 +65,25 @@ function pad(num) {
   return str.length > 1 ? str : '0' + str;
 }
 
-function time() {
+function getUpdateTime() {
   var d = new Date();
   return [d.getHours(), d.getMinutes(), d.getSeconds()].map(pad).join(':');
 }
 
-function random(min, max) {
-  return (Math.random() * (max - min) + min).toFixed(1);
+function random(min, max, decimalPoints = 1) {
+  return +(Math.random() * (max - min) + min).toFixed(decimalPoints);
 }
 
-function getPercentage(min, max, value) {
-  var range = max - min;
-  return Math.round((100 * value - min) / range);
+function or(a, b) {
+  return +random(0, 1, 0) ? a : b;
 }
 
-module.exports = Market;
+function getPercentage(total, value) {
+  return +(value / total * 100).toFixed(2);
+}
+
+function priceFormat(num) {
+  return +num.toFixed(2);
+}
+
+module.exports = { Market };
