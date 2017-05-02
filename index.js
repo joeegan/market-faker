@@ -11,14 +11,18 @@ class Market {
   setData() {
     const priceDistance = random(0.1, 5) / 2;
     const midPrice = +(or(this.buy, this.sell) || this.opening);
-    this.buy = getBuy(midPrice, priceDistance);
+    const buy = getBuy(midPrice, priceDistance);
+    this.changePercentage = getPercentage(this.opening, this.change);
+
+    this.hasRisen = buy > this.buy;
+    this.hasDropped = buy < this.buy;
+    this.buy = buy;
     this.sell = getSell(midPrice, priceDistance);
+
     this.low = getLow(this.low, this.sell);
     this.high = getHigh(this.high, this.buy);
     this.change = getChange(this.opening, this.buy);
-    this.changePercentage = getPercentage(this.opening, this.change);
     this.updateTime = getUpdateTime();
-    console.log(this);
   }
 
 }
@@ -27,11 +31,11 @@ function loop(func, speedFunc, context) {
   (function tick() {
     func.call(context);
     setTimeout(tick, speedFunc());
-  }.bind(context)());
+  }());
 }
 
 function getTickSpeed() {
-  return random(500, 2500);
+  return random(100, 500);
 }
 
 function getBuy(midPrice, priceDistance) {

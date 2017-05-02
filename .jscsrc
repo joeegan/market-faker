@@ -1,6 +1,0 @@
-{
-	'preset': 'airbnb',
-  'requireTrailingComma': false,
-  'excludeFiles': ['*.md'],
-  'requirePaddingNewLinesAfterBlocks': false
-}
