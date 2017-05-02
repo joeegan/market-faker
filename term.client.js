@@ -2,11 +2,13 @@ const readline = require('readline')
 const Table = require('cli-table')
 const colors = require('colors')
 const Market = require('./index').Market
+const sparkline = require('sparkline');
+sparkline([1,2,3]);
 
 const table = new Table({
   head: ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'],
   style: { head: ['white'] },
-  colWidths: [20, 20, 20, 20, 20, 20, 20],
+  colWidths: [30, 10, 10, 10, 10, 15, 12],
 })
 
 const markets = [
@@ -23,11 +25,12 @@ setInterval(() => {
       high,
       low,
       change,
-      changePercentage
+      changePercentage,
+      lastMidTicks,
     } = market
 
     return [
-      name,
+      `${name} ${sparkline(lastMidTicks.slice(lastMidTicks.length - 18, lastMidTicks.length-1))}`,
       formatPrice(buy, true, market),
       formatPrice(sell, true, market),
       high.toFixed(2),

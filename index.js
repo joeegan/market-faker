@@ -5,6 +5,7 @@ class Market {
   constructor(name, midPrice) {
     this.name = name;
     this.opening = midPrice;
+    this.lastMidTicks = [];
     loop(this.setData, getTickSpeed, this);
   }
 
@@ -23,6 +24,7 @@ class Market {
     this.high = getHigh(this.high, this.buy);
     this.change = getChange(this.opening, this.buy);
     this.updateTime = getUpdateTime();
+    this.lastMidTicks.push(midPrice);
   }
 
 }
