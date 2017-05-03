@@ -1,9 +1,8 @@
 const readline = require('readline')
 const Table = require('cli-table')
 const colors = require('colors')
-const Market = require('./index').Market
+const Market = require('./market')
 const sparkline = require('sparkline');
-sparkline([1,2,3]);
 
 const table = new Table({
   head: ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'],
