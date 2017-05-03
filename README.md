@@ -1,4 +1,4 @@
-# `market-faker`
+![Screencast](https://raw.githubusercontent.com/joeegan/market-faker/master/animation.gif)
 
 This npm module provides simulated financial market data.
 
@@ -33,9 +33,9 @@ Currently all markets tick at random intervals so markets can be bound to views 
 
 ```javascript
 const data = [
-  new Market('Wall Street', 16330.6),
-  new Market('Rolls-Royce Holdings PLC', 513.0),
-];
+  new Market('Foobar PLC', 1271.0),
+  new Market('Bazqux PLC', 4500.0)
+]
 
 (function loop(){
   requestAnimationFrame(loop);
