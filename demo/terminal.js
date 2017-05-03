@@ -3,6 +3,7 @@ const Table = require('cli-table')
 const colors = require('colors')
 const Market = require('../src/market')
 const sparkline = require('sparkline')
+const Rx = require('rxjs/Rx')
 
 const table = new Table({
   head: ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'],
@@ -12,11 +13,15 @@ const table = new Table({
 
 const markets = [
   new Market('Foobar PLC', 1271.0),
-  new Market('Bazqux PLC', 4500.0)
+  new Market('Bazqux PLC', 4500.0),
 ]
 
-setInterval(() => {
-  const data = markets.map(market => {
+const data = []
+
+markets.forEach((m, i) => {
+
+  m.subscribe(market => {
+
     const {
       name,
       buy,
@@ -28,7 +33,7 @@ setInterval(() => {
       lastMidTicks,
     } = market
 
-    return [
+    data.splice(i, 1, [
       `${name} ${sparkline(lastMidTicks.slice(lastMidTicks.length - 18, lastMidTicks.length-1))}`,
       formatPrice(buy, true, market),
       formatPrice(sell, true, market),
@@ -36,14 +41,21 @@ setInterval(() => {
       low.toFixed(2),
       formatChange(change),
       formatChange(changePercentage),
-    ]
+    ])
+
+    render()
+
   })
+})
+
+const render = () => {
+
   table.splice(0)
   table.push(...data)
   readline.clearLine(process.stdout, 0)
   readline.cursorTo(process.stdout, 0, 1)
   process.stdout.write(`${table.toString()}`)
-}, 100)
+}
 
 const formatPrice = (num, color, market) => {
   if (color && market.hasRisen) {

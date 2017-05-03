@@ -9,38 +9,17 @@ To use financial data that is not reliant on external sources to avoid problems 
 ## Usage
 
 ```bash
-npm install market-faker
+yarn add market-faker
 ```
 ```javascript
-import { Market } from 'market-faker'
+import Market from 'market-faker'
 
-let foo = new Market('Foobar PLC', 1271.0);
+const foo = new Market('Foobar PLC', 1271.0);
 
-foo.buy
-// -> 1271.4
-foo.sell
-// -> 1270.6
-
-// Some time passes...
-
-foo.buy
-// -> 1283.2
-foo.sell
-// -> 1282.7
-```
-
-Currently all markets tick at random intervals so markets can be bound to views easily in consuming applications. e.g.
-
-```javascript
-const data = [
-  new Market('Foobar PLC', 1271.0),
-  new Market('Bazqux PLC', 4500.0)
-]
-
-(function loop(){
-  requestAnimationFrame(loop);
-  render(data);
-})();
+foo.subscribe(market => {
+  market.sell
+  // -> 1270.6
+})
 ```
 
 # Characteristics of a Market

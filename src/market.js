@@ -1,13 +1,21 @@
+const Rx = require('rxjs/Rx')
+
 module.exports = class Market {
 
   constructor(name, midPrice) {
     this.name = name
     this.opening = midPrice
     this.lastMidTicks = []
-    loop(this.setData, getTickSpeed, this)
+
+    return Rx.Observable.create(observer => {
+      setInterval(() => {
+        observer.next(this.getData())
+      }, getTickSpeed())
+    })
+
   }
 
-  setData() {
+  getData() {
     const priceDistance = random(0.1, 5) / 2
     const midPrice = +(or(this.buy, this.sell) || this.opening)
     const buy = getBuy(midPrice, priceDistance)
@@ -23,19 +31,14 @@ module.exports = class Market {
     this.change = getChange(this.opening, this.buy)
     this.updateTime = getUpdateTime()
     this.lastMidTicks.push(midPrice)
+
+    return this;
   }
 
 }
 
-function loop(func, speedFunc, context) {
-  (function tick() {
-    func.call(context)
-    setTimeout(tick, speedFunc())
-  }())
-}
-
 function getTickSpeed() {
-  return random(100, 500)
+  return random(0, 1000)
 }
 
 function getBuy(midPrice, priceDistance) {
