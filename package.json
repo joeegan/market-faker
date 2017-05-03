@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "Simulates financial markets",
   "scripts": {
-    "start": "node term.client.js",
+    "start": "node demo/terminal.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,8 +13,6 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "lodash": "^4.3.0",
-    "moment": "^2.11.2",
-    "redux": "^3.3.1",
     "sparkline": "^0.1.2"
   }
 }
