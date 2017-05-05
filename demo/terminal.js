@@ -1,9 +1,8 @@
 const readline = require('readline')
 const Table = require('cli-table')
 const colors = require('colors')
-const Market = require('../src/market')
 const sparkline = require('sparkline')
-const Rx = require('rxjs/Rx')
+const Market = require('../src/market')
 
 const table = new Table({
   head: ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'],
@@ -11,12 +10,26 @@ const table = new Table({
   colWidths: [30, 10, 10, 10, 10, 15, 12],
 })
 
+const tickHistory = {
+  buy: 1,
+  sell: 1,
+  midPrice: 18,
+}
+
 const markets = [
-  new Market('Foobar PLC', 1271.0),
-  new Market('Bazqux PLC', 4500.0),
+  new Market({
+    name: 'Foobar PLC',
+    opening: 1271.0,
+    history: tickHistory,
+  }),
+  new Market({
+    name: 'Bazqux PLC',
+    opening: 4500.0,
+    history: tickHistory,
+  }),
 ]
 
-const data = []
+const tableData = []
 
 markets.forEach((m, i) => {
 
@@ -30,43 +43,45 @@ markets.forEach((m, i) => {
       low,
       change,
       changePercentage,
-      lastMidTicks,
     } = market
 
-    data.splice(i, 1, [
-      `${name} ${sparkline(lastMidTicks.slice(lastMidTicks.length - 18, lastMidTicks.length-1))}`,
-      formatPrice(buy, true, market),
-      formatPrice(sell, true, market),
+    const [previousBuy] = market.history.buy
+    const hasRisen = previousBuy < buy
+    const hasDropped = previousBuy > buy
+    const lastMidTicks = market.history.midPrice
+
+    render([
+      `${name} ${sparkline(lastMidTicks)}`,
+      formatPrice(buy, hasRisen, hasDropped),
+      formatPrice(sell, hasRisen, hasDropped),
       high.toFixed(2),
       low.toFixed(2),
       formatChange(change),
       formatChange(changePercentage),
-    ])
-
-    render()
+    ], i)
 
   })
 })
 
-const render = () => {
-
-  table.splice(0)
-  table.push(...data)
+const render = (data, rowIndex) => {
+  table.splice(rowIndex, 1, data)
   readline.clearLine(process.stdout, 0)
   readline.cursorTo(process.stdout, 0, 1)
   process.stdout.write(`${table.toString()}`)
 }
 
-const formatPrice = (num, color, market) => {
-  if (color && market.hasRisen) {
-    return num.toFixed(2).red
+const formatPrice = (num, hasRisen, hasDropped) => {
+  const { white, red, blue } = num.toFixed(2)
+  if (hasRisen) {
+    return red
   }
-  if (color && market.hasDropped) {
-    return num.toFixed(2).blue
+  if (hasDropped) {
+    return blue
   }
-  return num.toFixed(2).white
+  return white
 }
 
 const formatChange = num => {
-  return num > 0 ? num.toFixed(2).blue : num.toFixed(2).red
+  const { red, blue } = num.toFixed(2)
+  return num > 0 ? blue : red
 }

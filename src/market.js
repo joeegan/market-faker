@@ -1,70 +1,103 @@
-const Rx = require('rxjs/Rx')
+/*
+ * An observable market with optional history
+ */
+const { Observable } = require('rxjs/Rx')
+const History = require('./history')
 
 module.exports = class Market {
 
-  constructor(name, midPrice) {
-    this.name = name
-    this.opening = midPrice
-    this.lastMidTicks = []
-
-    return Rx.Observable.create(observer => {
+  constructor(spec) {
+    this.name = spec.name
+    this.opening = spec.opening
+    if (spec.history) {
+      this.history = new History(spec.history)
+    }
+    return Observable.create(observer => {
       setInterval(() => {
-        observer.next(this.getData())
+        this.tick()
+        const json = this.json
+        observer.next(json)
+        if (this.history) {
+          this.history.update(json)
+        }
       }, getTickSpeed())
+      //TODO random durations between ticks
     })
-
   }
 
-  getData() {
-    const priceDistance = random(0.1, 5) / 2
-    const midPrice = +(or(this.buy, this.sell) || this.opening)
-    const buy = getBuy(midPrice, priceDistance)
-    this.changePercentage = getPercentage(this.opening, this.change)
+  tick() {
+    this.priceDistance = random(0.1, 5) / 2
+    this.midPrice = +(or(this.buy, this.sell) || this.opening)
+    this.high = this.getHigh()
+    this.low = this.getLow()
+  }
 
-    this.hasRisen = buy > this.buy
-    this.hasDropped = buy < this.buy
-    this.buy = buy
-    this.sell = getSell(midPrice, priceDistance)
+  getAll(props) {
+    return props.reduce((acc, prop) => {
+      return Object.assign(acc, {
+        [prop]: this[prop],
+      })
+    }, {})
+  }
 
-    this.low = getLow(this.low, this.sell)
-    this.high = getHigh(this.high, this.buy)
-    this.change = getChange(this.opening, this.buy)
-    this.updateTime = getUpdateTime()
-    this.lastMidTicks.push(midPrice)
+  getHigh() {
+    const { high, buy } = this
+    if (!high) {
+      return buy
+    }
+    return buy > high ? buy : high
+  }
 
-    return this;
+  getLow() {
+    const { low, sell } = this
+    if (!low) {
+      return sell
+    }
+    return sell < low ? sell : low
+  }
+
+  get json() {
+    return this.getAll([
+      'name',
+      'buy',
+      'sell',
+      'high',
+      'low',
+      'midPrice',
+      'change',
+      'history',
+      'changePercentage',
+    ])
+  }
+
+  get buy() {
+    return +(this.midPrice + this.priceDistance).toFixed(2)
+  }
+
+  get sell() {
+    return +(this.midPrice - this.priceDistance).toFixed(2)
+  }
+
+  get hasRisen() {
+    return this.buy > this.previousBuy
+  }
+
+  get hasDropped() {
+    return this.buy < this.previousBuy
+  }
+
+  get change() {
+    return +(this.opening - this.buy).toFixed(2)
+  }
+
+  get changePercentage() {
+    return getPercentage(this.opening, this.change)
   }
 
 }
 
 function getTickSpeed() {
   return random(0, 1000)
-}
-
-function getBuy(midPrice, priceDistance) {
-  return +(midPrice + priceDistance).toFixed(2)
-}
-
-function getSell(midPrice, priceDistance) {
-  return +(midPrice - priceDistance).toFixed(2)
-}
-
-function getChange(opening, buy) {
-  return +(opening - buy).toFixed(2)
-}
-
-function getLow(low, sell) {
-  if (!low) {
-    return sell
-  }
-  return sell < low ? sell : low
-}
-
-function getHigh(high, buy) {
-  if (!high) {
-    return buy
-  }
-  return buy > high ? buy : high
 }
 
 function pad(num) {
