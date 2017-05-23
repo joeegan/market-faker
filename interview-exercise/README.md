@@ -1,6 +1,5 @@
 * Create a working copy of the gif for the browser.
 
-**Limitations**
 * App frameworks such as React, Ember or Angular 👎
 * jQuery 👎
 * Lodash 👍
