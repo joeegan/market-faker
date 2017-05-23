@@ -20,15 +20,16 @@ const markets = [
   }),
 ]
 
+const headings = ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %']
+const header = '<thead><tr>' + headings.reduce((str, name, i) => {
+  return str += `<th>${name}</th>`
+}, '') + '</tr></thead>'
+
+const rows = '<tbody>' + markets.reduce((str, market, i) => {
+  return str += `<tr id=market${i}></tr>`
+}, '') + '</tbody>'
+
 window.onload = () => {
-
-  const header = '<thead><tr>' + ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'].reduce((str, name, i) => {
-    return str += `<th>${name}</th>`
-  }, '') + '</tr></thead>'
-
-  const rows = '<tbody>' + markets.reduce((str, market, i) => {
-    return str += `<tr id=market${i}></tr>`
-  }, '') + '</tbody>'
 
   document.querySelector('table').innerHTML = header + rows;
 
