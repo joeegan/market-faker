@@ -20,46 +20,73 @@ const markets = [
   }),
 ]
 
-markets.forEach((m, i) => {
+window.onload = () => {
 
-  m.subscribe(market => {
+  const header = '<thead><tr>' + ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %'].reduce((str, name, i) => {
+    return str += `<th>${name}</th>`
+  }, '') + '</tr></thead>'
 
-    const {
-      name,
-      buy,
-      sell,
-      high,
-      low,
-      change,
-      changePercentage,
-    } = market
+  const rows = '<tbody>' + markets.reduce((str, market, i) => {
+    return str += `<tr id=market${i}></tr>`
+  }, '') + '</tbody>'
 
-    const [previousBuy] = market.history.buy
-    const hasRisen = previousBuy < buy
-    const hasDropped = previousBuy > buy
-    const lastMidTicks = market.history.midPrice
+  document.querySelector('table').innerHTML = header + rows;
 
-    render([
-      `${name} ${sparkline(lastMidTicks)}`,
-      formatPrice(buy, hasRisen, hasDropped),
-      formatPrice(sell, hasRisen, hasDropped),
-      high.toFixed(2),
-      low.toFixed(2),
-      formatChange(change),
-      formatChange(changePercentage),
-    ], i)
+  markets.forEach((m, i) => {
 
-  })
-})
+    m.subscribe(market => {
+
+      const {
+        name,
+        buy,
+        sell,
+        high,
+        low,
+        change,
+        changePercentage,
+      } = market
+
+      const [previousBuy] = market.history.buy
+      const hasRisen = previousBuy < buy
+      const hasDropped = previousBuy > buy
+      const lastMidTicks = market.history.midPrice
+
+      render([
+        `${name} ${sparkline(lastMidTicks)}`,
+        formatPrice(buy, hasRisen, hasDropped),
+        formatPrice(sell, hasRisen, hasDropped),
+        high.toFixed(2),
+        low.toFixed(2),
+        formatChange(change),
+        formatChange(changePercentage),
+      ], i)
+
+    })
+  });
+
+}
+
+const span = (color, content) => `<span class=${color}>${content}</span>`;
 
 const render = (data, rowIndex) => {
-  console.log('---', data)
+  data.index = rowIndex;
+  document.querySelector(`#market${rowIndex}`).innerHTML = data.reduce((str, d, i) => {
+    return str += `<td>${d}</td>`;
+  }, '');
 }
 
 const formatPrice = (num, hasRisen, hasDropped) => {
-  return num
+  let color = 'white'
+  if (hasRisen) {
+    color = 'red'
+  }
+  if (hasDropped) {
+    color = 'blue'
+  }
+  return span(color, num.toFixed(2));
 }
 
 const formatChange = num => {
-  return num
+  const color = (num > 0) ? 'blue' : 'red';
+  return span(color, num.toFixed(2));
 }

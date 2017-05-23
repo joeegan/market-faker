@@ -8,8 +8,12 @@ const config = {
     path: path.resolve(__dirname, 'browser-demo'),
     filename: 'bundle.js'
   },
+  devtool: 'source-map',
   devServer: {
-    contentBase: './browser-demo'
+    contentBase: './browser-demo',
+    watchOptions: {
+      poll: true
+    },
   },
   module: {
     rules: [{
