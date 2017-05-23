@@ -97,7 +97,7 @@ module.exports = class Market {
 }
 
 function getTickSpeed() {
-  return random(0, 1000)
+  return random(500, 1000)
 }
 
 function pad(num) {

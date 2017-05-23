@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "description": "Simulates financial markets",
   "scripts": {
-    "start": "node demo/terminal.js",
+    "start-terminal": "node demo/terminal.js",
+    "start-browser": "webpack-dev-server --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
