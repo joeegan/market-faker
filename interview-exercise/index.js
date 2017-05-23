@@ -1,5 +1,6 @@
 const sparkline = require('sparkline')
 const Market = require('../src/market')
+const _ = require('lodash')
 
 const tickHistory = {
   buy: 1,
