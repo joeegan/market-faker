@@ -4,10 +4,8 @@
   "version": "0.1.0",
   "description": "Simulates financial markets",
   "scripts": {
-    "start-terminal": "node demo/terminal.js",
-    "start": "node demo/terminal.js",
-    "start-browser": "webpack-dev-server --open",
-    "test": "jest"
+    "start": "webpack-dev-server --open",
+    "test": "jest --no-watchman"
   },
   "author": "",
   "license": "ISC",
@@ -21,9 +19,11 @@
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
+    "babel-jest": "^20.0.3",
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.24.1",
     "css-loader": "^0.28.2",
+    "regenerator-runtime": "^0.10.5",
     "style-loader": "^0.18.0",
     "webpack": "^2.6.0",
     "webpack-dev-server": "^2.4.5"

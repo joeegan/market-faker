@@ -7,7 +7,7 @@ const tickHistory = {
   midPrice: 18,
 }
 
-const markets = [
+export const markets = [
   new Market({
     name: 'Foobar PLC',
     opening: 1271.0,

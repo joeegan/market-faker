@@ -2,15 +2,15 @@ const webpack = require('webpack')
 const path = require('path')
 
 const config = {
-  context: path.resolve(__dirname, 'browser-demo'),
-  entry: './demo.js',
+  context: path.resolve(__dirname, 'interview-exercise'),
+  entry: './index.js',
   output: {
-    path: path.resolve(__dirname, 'browser-demo'),
+    path: path.resolve(__dirname, 'interview-exercise'),
     filename: 'bundle.js'
   },
   devtool: 'source-map',
   devServer: {
-    contentBase: './browser-demo',
+    contentBase: './interview-exercise',
     watchOptions: {
       poll: true
     },
@@ -18,7 +18,7 @@ const config = {
   module: {
     rules: [{
       test: /\.js$/,
-      include: path.resolve(__dirname, 'browser-demo'),
+      include: path.resolve(__dirname, 'interview-exercise'),
       use: [{
         loader: 'babel-loader',
         options: {
