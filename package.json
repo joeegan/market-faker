@@ -1,19 +1,31 @@
 {
   "main": "index.js",
   "name": "market-faker",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simulates financial markets",
   "scripts": {
+    "start-terminal": "node demo/terminal.js",
     "start": "node demo/terminal.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-browser": "webpack-dev-server --open",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
+    "jest": "^20.0.3",
     "lodash": "^4.3.0",
     "rxjs": "^5.3.1",
     "sparkline": "^0.1.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "css-loader": "^0.28.2",
+    "style-loader": "^0.18.0",
+    "webpack": "^2.6.0",
+    "webpack-dev-server": "^2.4.5"
   }
 }
