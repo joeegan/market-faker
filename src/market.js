@@ -4,113 +4,83 @@
 const { Observable } = require('rxjs/Rx')
 const History = require('./history')
 
-module.exports = class Market {
+export const Market = spec => {
 
-  constructor(spec) {
-    this.name = spec.name
-    this.opening = spec.opening
-    this.history = new History(spec.history)
-    this.calculateSecondaryProps()
-
-    return Observable
-      .of('')
-      .map(n => this.json)
-      .do(n => this.calculateSecondaryProps())
-      .do(n => this.history.update(this.json))
-      .concatMap(json => {
-        return Observable
-          .of(json)
-          .delay(random(500, 1000))
-      })
-      .repeat()
-
-  }
-
-  calculateSecondaryProps() {
-    this.priceDistance = random(0.1, 5) / 2
-    this.midPrice = +(or(this.buy, this.sell) || this.opening)
-    this.high = this.getHigh()
-    this.low = this.getLow()
-  }
-
-  getAll(props) {
-    return props.reduce((acc, prop) => {
-      return Object.assign(acc, {
-        [prop]: this[prop],
-      })
-    }, {})
-  }
-
-  getHigh() {
-    const { high, buy } = this
-    if (!high) {
-      return buy
-    }
-    return buy > high ? buy : high
-  }
-
-  getLow() {
-    const { low, sell } = this
-    if (!low) {
-      return sell
-    }
-    return sell < low ? sell : low
-  }
-
-  get json() {
-    return this.getAll([
-      'name',
-      'buy',
-      'sell',
-      'high',
-      'low',
-      'midPrice',
-      'change',
-      'history',
-      'changePercentage',
-    ])
-  }
-
-  get buy() {
-    return +(this.midPrice + this.priceDistance).toFixed(2)
-  }
-
-  get sell() {
-    return +(this.midPrice - this.priceDistance).toFixed(2)
-  }
-
-  get change() {
-    return +(this.opening - this.buy).toFixed(2)
-  }
-
-  get changePercentage() {
-    return getPercentage(this.opening, this.change)
-  }
+  return Observable
+    .of(getInitialSnapshot(spec))
+    .do(data => tick(data))
+    .do(data => history.update(data))
+    .concatMap(json => {
+      return Observable
+        .of(json)
+        .delay(random(500, 1000))
+    })
+    .repeat()
 
 }
 
-function pad(num) {
-  const str = num.toString()
+const getInitialSnapshot = ({ name, opening, history }) => {
+  const buy = getBuy(opening, getPriceMovement());
+  const sell = getSell(opening, getPriceMovement());
+  return {
+    name: name,
+    buy: buy,
+    sell: sell,
+    high: buy,
+    low: sell,
+    change: getChange(opening, buy),
+    history: new History(history),
+    changePercentage: getChangePercentage(opening, buy),
+  }
+}
+
+const tick = data => {
+  const { buy, sell, high, low } = data
+  return Object.assign({}, data, {
+    priceMovement: random(0.1, 5) / 2,
+    midPrice: +(either(buy, sell)),
+    high: Math.max(high, buy),
+    low: Math.min(low, sell),
+  })
+}
+
+// Finance utils
+const getBuy = (midPrice, priceDistance) =>
+  +(midPrice + priceDistance).toFixed(2)
+
+const getSell = (midPrice, priceDistance) =>
+  +(midPrice - priceDistance).toFixed(2)
+
+const getChange = (opening, buy) =>
+  +(opening - buy).toFixed(2)
+
+const getChangePercentage = (opening, change) =>
+  getPercentage(opening, change)
+
+const getPriceMovement = () =>
+  random(0.1, 5) / 2
+
+
+// Utils
+const pad = n => {
+  const str = n.toString()
   return str.length > 1 ? str : '0' + str
 }
 
-function getUpdateTime() {
+const getUpdateTime = () => {
   var d = new Date()
-  return [d.getHours(), d.getMinutes(), d.getSeconds()].map(pad).join(':')
+  return [
+    d.getHours(),
+    d.getMinutes(),
+    d.getSeconds()
+  ].map(pad)
+   .join(':')
 }
 
-function random(min, max, decimalPoints = 1) {
-  return +(Math.random() * (max - min) + min).toFixed(decimalPoints)
-}
+const random = (min, max, decimalPoints = 1) => +(Math.random() * (max - min) + min).toFixed(decimalPoints)
 
-function or(a, b) {
-  return +random(0, 1, 0) ? a : b
-}
+const either = (a, b) => +random(0, 1, 0) ? a : b
 
-function getPercentage(total, value) {
-  return +(value / total * 100).toFixed(2)
-}
+const getPercentage = (total, value) => +(value / total * 100).toFixed(2)
 
-function priceFormat(num) {
-  return +num.toFixed(2)
-}
+const priceFormat = n => +n.toFixed(2)

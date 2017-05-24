@@ -1,5 +1,5 @@
 const sparkline = require('sparkline')
-const Market = require('../src/market')
+const Market = require('../src/market').Market
 
 const tickHistory = {
   buy: 1,
@@ -8,12 +8,12 @@ const tickHistory = {
 }
 
 const markets = [
-  new Market({
+  Market({
     name: 'Foobar PLC',
     opening: 1271.0,
     history: tickHistory,
   }),
-  new Market({
+  Market({
     name: 'Bazqux PLC',
     opening: 4500.0,
     history: tickHistory,
