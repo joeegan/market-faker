@@ -9,23 +9,24 @@ module.exports = class Market {
   constructor(spec) {
     this.name = spec.name
     this.opening = spec.opening
-    if (spec.history) {
-      this.history = new History(spec.history)
-    }
-    return Observable.create(observer => {
-      setInterval(() => {
-        this.tick()
-        const json = this.json
-        observer.next(json)
-        if (this.history) {
-          this.history.update(json)
-        }
-      }, getTickSpeed())
-      //TODO random durations between ticks
-    })
+    this.history = new History(spec.history)
+    this.calculateSecondaryProps()
+
+    return Observable
+      .of('')
+      .map(n => this.json)
+      .do(n => this.calculateSecondaryProps())
+      .do(n => this.history.update(this.json))
+      .concatMap(json => {
+        return Observable
+          .of(json)
+          .delay(random(500, 1000))
+      })
+      .repeat()
+
   }
 
-  tick() {
+  calculateSecondaryProps() {
     this.priceDistance = random(0.1, 5) / 2
     this.midPrice = +(or(this.buy, this.sell) || this.opening)
     this.high = this.getHigh()
@@ -78,14 +79,6 @@ module.exports = class Market {
     return +(this.midPrice - this.priceDistance).toFixed(2)
   }
 
-  get hasRisen() {
-    return this.buy > this.previousBuy
-  }
-
-  get hasDropped() {
-    return this.buy < this.previousBuy
-  }
-
   get change() {
     return +(this.opening - this.buy).toFixed(2)
   }
@@ -94,10 +87,6 @@ module.exports = class Market {
     return getPercentage(this.opening, this.change)
   }
 
-}
-
-function getTickSpeed() {
-  return random(500, 1000)
 }
 
 function pad(num) {
