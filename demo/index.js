@@ -51,6 +51,7 @@ window.onload = () => {
       const hasRisen = previousBuy < buy
       const hasDropped = previousBuy > buy
       const lastMidTicks = market.history.midPrice
+      // console.log(lastMidTicks)
 
       render([
         `${name} ${sparkline(lastMidTicks)}`,

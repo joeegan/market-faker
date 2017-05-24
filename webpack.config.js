@@ -15,20 +15,6 @@ const config = {
       poll: true
     },
   },
-  module: {
-    rules: [{
-      test: /\.js$/,
-      include: path.resolve(__dirname, 'demo'),
-      use: [{
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            ['es2015', { modules: false }]
-          ]
-        }
-      }]
-    }]
-  }
 }
 
 module.exports = config

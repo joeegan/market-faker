@@ -3,53 +3,71 @@
  */
 const { Observable } = require('rxjs/Rx')
 const History = require('./history')
+import _ from 'lodash';
 
 export const Market = spec => {
 
-  return Observable
-    .of(getInitialSnapshot(spec))
-    .do(data => tick(data))
-    .do(data => history.update(data))
-    .concatMap(json => {
-      return Observable
-        .of(json)
-        .delay(random(500, 1000))
-    })
-    .repeat()
+  const initialData = getInitialSnapshot(spec)
+
+  return Observable.create(observer => {
+    let data;
+    observer.next(initialData)
+    setInterval(() => {
+      const prevData = Object.assign({}, data)
+      data = tick(data || initialData)
+      observer.next(data)
+      data.history.update(data)
+    }, _.random(200, 1000))
+    //TODO random durations between ticks
+  })
 
 }
 
 const getInitialSnapshot = ({ name, opening, history }) => {
-  const buy = getBuy(opening, getPriceMovement());
-  const sell = getSell(opening, getPriceMovement());
+  const priceMovement = getPriceMovement()
+  const buy = getBuy(opening, priceMovement);
+  const sell = getSell(opening, priceMovement);
   return {
     name: name,
     buy: buy,
     sell: sell,
     high: buy,
     low: sell,
+    opening,
     change: getChange(opening, buy),
     history: new History(history),
+    midPrice: opening,
     changePercentage: getChangePercentage(opening, buy),
   }
 }
 
 const tick = data => {
-  const { buy, sell, high, low } = data
+  const { high, low, opening, history } = data
+  const priceMovement = getPriceMovement()
+  let midPrice = +(either(data.buy, data.sell))
+  if (midPrice === data.midPrice) {
+    midPrice = midPrice + getPriceMovement()
+  }
+  const buy = getBuy(midPrice, priceMovement)
+  const sell = getSell(midPrice, priceMovement)
   return Object.assign({}, data, {
-    priceMovement: random(0.1, 5) / 2,
-    midPrice: +(either(buy, sell)),
+    buy,
+    sell,
+    midPrice,
+    history,
     high: Math.max(high, buy),
     low: Math.min(low, sell),
+    change: getChange(opening, buy),
+    changePercentage: getChangePercentage(opening, buy),
   })
 }
 
 // Finance utils
-const getBuy = (midPrice, priceDistance) =>
-  +(midPrice + priceDistance).toFixed(2)
+const getBuy = (midPrice, priceMovement) =>
+  +(midPrice + priceMovement).toFixed(2)
 
-const getSell = (midPrice, priceDistance) =>
-  +(midPrice - priceDistance).toFixed(2)
+const getSell = (midPrice, priceMovement) =>
+  +(midPrice - priceMovement).toFixed(2)
 
 const getChange = (opening, buy) =>
   +(opening - buy).toFixed(2)
@@ -58,8 +76,7 @@ const getChangePercentage = (opening, change) =>
   getPercentage(opening, change)
 
 const getPriceMovement = () =>
-  random(0.1, 5) / 2
-
+  random(0.1, 5)
 
 // Utils
 const pad = n => {
@@ -77,9 +94,7 @@ const getUpdateTime = () => {
    .join(':')
 }
 
-const random = (min, max, decimalPoints = 1) => +(Math.random() * (max - min) + min).toFixed(decimalPoints)
-
-const either = (a, b) => +random(0, 1, 0) ? a : b
+const either = (a, b) => +_.random(0, 1, 0) ? a : b
 
 const getPercentage = (total, value) => +(value / total * 100).toFixed(2)
 

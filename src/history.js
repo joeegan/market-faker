@@ -3,7 +3,7 @@ module.exports = class History {
   constructor(spec) {
     for (let prop in spec) {
       const numberOfTicksToStore = spec[prop]
-      this[prop] = new Array(numberOfTicksToStore).fill(0)
+      this[prop] = new Array(numberOfTicksToStore).fill(null)
     }
   }
 
@@ -14,6 +14,7 @@ module.exports = class History {
         this[prop].push(data[prop])
       }
     }
+    return data
   }
 
 }
