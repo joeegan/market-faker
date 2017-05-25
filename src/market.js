@@ -12,13 +12,17 @@ export const Market = spec => {
   return Observable.create(observer => {
     let data;
     observer.next(initialData)
-    setInterval(() => {
-      const prevData = Object.assign({}, data)
-      data = tick(data || initialData)
-      observer.next(data)
-      data.history.update(data)
-    }, _.random(200, 1000))
-    //TODO random durations between ticks
+
+    const timeout = (delay) => {
+      setTimeout(() => {
+        data = tick(data || initialData)
+        observer.next(data)
+        data.history.update(data)
+  	    timeout(_.random(200, 1000))
+      }, delay)
+    }
+    timeout(_.random(200, 1000));
+
   })
 
 }
@@ -76,7 +80,7 @@ const getChangePercentage = (opening, change) =>
   getPercentage(opening, change)
 
 const getPriceMovement = () =>
-  random(0.1, 5)
+  _.random(0.1, 5)
 
 // Utils
 const pad = n => {
