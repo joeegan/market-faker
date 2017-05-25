@@ -18,5 +18,9 @@
     "sparkline": "^0.1.2",
     "webpack": "^2.6.0",
     "webpack-dev-server": "^2.4.5"
+  },
+  "devDependencies": {
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1"
   }
 }

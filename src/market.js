@@ -10,10 +10,9 @@ export const Market = spec => {
   const initialData = getInitialSnapshot(spec)
 
   return Observable.create(observer => {
-    let data;
+    let data
     observer.next(initialData)
-
-    const timeout = (delay) => {
+    const timeout = delay => {
       setTimeout(() => {
         data = tick(data || initialData)
         observer.next(data)
@@ -21,10 +20,8 @@ export const Market = spec => {
   	    timeout(_.random(200, 1000))
       }, delay)
     }
-    timeout(_.random(200, 1000));
-
+    timeout(_.random(200, 1000))
   })
-
 }
 
 const getInitialSnapshot = ({ name, opening, history }) => {
@@ -32,9 +29,9 @@ const getInitialSnapshot = ({ name, opening, history }) => {
   const buy = getBuy(opening, priceMovement);
   const sell = getSell(opening, priceMovement);
   return {
-    name: name,
-    buy: buy,
-    sell: sell,
+    name,
+    buy,
+    sell,
     high: buy,
     low: sell,
     opening,
@@ -46,6 +43,7 @@ const getInitialSnapshot = ({ name, opening, history }) => {
 }
 
 const tick = data => {
+  const prevData = Object.assign({}, data)
   const { high, low, opening, history } = data
   const priceMovement = getPriceMovement()
   let midPrice = +(either(data.buy, data.sell))
@@ -54,7 +52,7 @@ const tick = data => {
   }
   const buy = getBuy(midPrice, priceMovement)
   const sell = getSell(midPrice, priceMovement)
-  return Object.assign({}, data, {
+  const newData = Object.assign({}, data, {
     buy,
     sell,
     midPrice,
@@ -64,6 +62,7 @@ const tick = data => {
     change: getChange(opening, buy),
     changePercentage: getChangePercentage(opening, buy),
   })
+  return objectDiff(prevData, newData)
 }
 
 // Finance utils
@@ -83,6 +82,15 @@ const getPriceMovement = () =>
   _.random(0.1, 5)
 
 // Utils
+
+const objectDiff = (o1, o2) => (Object.keys(o2).reduce((diff, key) => {
+  if (o1[key] === o2[key]) return diff
+  return {
+    ...diff,
+    [key]: o2[key]
+  }
+}, {}))
+
 const pad = n => {
   const str = n.toString()
   return str.length > 1 ? str : '0' + str
@@ -98,8 +106,11 @@ const getUpdateTime = () => {
    .join(':')
 }
 
-const either = (a, b) => +_.random(0, 1, 0) ? a : b
+const either = (a, b) =>
+  +_.random(0, 1, 0) ? a : b
 
-const getPercentage = (total, value) => +(value / total * 100).toFixed(2)
+const getPercentage = (total, value) =>
+  +(value / total * 100).toFixed(2)
 
-const priceFormat = n => +n.toFixed(2)
+const priceFormat = n =>
+  +n.toFixed(2)

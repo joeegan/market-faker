@@ -48,15 +48,13 @@ window.onload = () => {
       } = market
 
       const [previousBuy] = market.history.buy
-      const hasRisen = previousBuy < buy
-      const hasDropped = previousBuy > buy
-      const lastMidTicks = market.history.midPrice
-      // console.log(lastMidTicks)
+      const bullish = previousBuy < buy
+      const bearish = previousBuy > buy
 
       render([
-        `${name} ${sparkline(lastMidTicks)}`,
-        formatPrice(buy, hasRisen, hasDropped),
-        formatPrice(sell, hasRisen, hasDropped),
+        `${name} ${sparkline(market.history.midPrice)}`,
+        formatPrice(buy, bullish, bearish),
+        formatPrice(sell, bullish, bearish),
         high.toFixed(2),
         low.toFixed(2),
         formatChange(change),
@@ -77,18 +75,21 @@ const render = (data, rowIndex) => {
   }, '');
 }
 
-const formatPrice = (num, hasRisen, hasDropped) => {
+const formatPrice = (num, bullish, bearish) => {
   let color = 'white'
-  if (hasRisen) {
+  if (bullish) {
     color = 'red'
   }
-  if (hasDropped) {
+  if (bearish) {
     color = 'blue'
   }
-  return span(color, num.toFixed(2));
+  return span(
+    color,
+    num.toFixed(2)
+  )
 }
 
 const formatChange = num => {
-  const color = (num > 0) ? 'blue' : 'red';
-  return span(color, num.toFixed(2));
+  const color = (num > 0) ? 'blue' : 'red'
+  return span(color, num.toFixed(2))
 }
