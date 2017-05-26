@@ -7,14 +7,13 @@ import _ from 'lodash';
 
 export const Market = spec => {
 
-  const initialData = getInitialSnapshot(spec)
+  const snapshot = getSnapshot(spec)
 
-  return Observable.create(observer => {
-    let data
-    observer.next(initialData)
+  const observable = Observable.create(observer => {
+    let data = snapshot
     const timeout = delay => {
       setTimeout(() => {
-        data = tick(data || initialData)
+        data = tick(data, snapshot)
         observer.next(data)
         data.history.update(data)
   	    timeout(_.random(200, 1000))
@@ -22,9 +21,11 @@ export const Market = spec => {
     }
     timeout(_.random(200, 1000))
   })
+
+  return Object.assign(observable, { snapshot })
 }
 
-const getInitialSnapshot = ({ name, opening, history }) => {
+const getSnapshot = ({ name, opening, history }) => {
   const priceMovement = getPriceMovement()
   const buy = getBuy(opening, priceMovement);
   const sell = getSell(opening, priceMovement);
@@ -42,9 +43,9 @@ const getInitialSnapshot = ({ name, opening, history }) => {
   }
 }
 
-const tick = data => {
+const tick = (data, snapshot) => {
   const prevData = Object.assign({}, data)
-  const { high, low, opening, history } = data
+  const { high, low, history } = data
   const priceMovement = getPriceMovement()
   let midPrice = +(either(data.buy, data.sell))
   if (midPrice === data.midPrice) {
@@ -57,12 +58,12 @@ const tick = data => {
     sell,
     midPrice,
     history,
-    high: Math.max(high, buy),
-    low: Math.min(low, sell),
-    change: getChange(opening, buy),
-    changePercentage: getChangePercentage(opening, buy),
+    high: Math.max(high || snapshot.high, buy),
+    low: Math.min(low || snapshot.low, sell),
+    change: getChange(snapshot.opening, buy),
+    changePercentage: getChangePercentage(snapshot.opening, buy),
   })
-  return objectDiff(prevData, newData)
+  return Object.assign({ history }, objectDiff(prevData, newData))
 }
 
 // Finance utils

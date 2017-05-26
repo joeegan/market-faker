@@ -20,14 +20,65 @@ const markets = [
   }),
 ]
 
-const headings = ['', 'Sell', 'Buy', 'High', 'Low', 'Change (pts)', 'Change %']
-const header = '<thead><tr>' + headings.reduce((str, name, i) => {
-  return str += `<th>${name}</th>`
+const getColumns = data => {
+  let bullish, bearish;
+  if (data) {
+    const [previousBuy] = data.history.buy
+    bullish = previousBuy < data.buy
+    bearish = previousBuy > data.buy
+  }
+  return [
+    {
+      key: 'name',
+      heading: '',
+      formatter: () => data.name,
+    },
+    {
+      key: 'history',
+      heading: '',
+      formatter: () => sparkline(data.history.midPrice)
+    },
+    {
+      key: 'sell',
+      heading: 'Sell',
+      formatter: () => formatPrice(data.sell, bullish, bearish),
+    },
+    {
+      key: 'buy',
+      heading: 'Buy',
+      formatter: () => formatPrice(data.buy, bullish, bearish),
+    },
+    {
+      key: 'high',
+      heading: 'High',
+      formatter: () => data.high.toFixed(2),
+    },
+    {
+      key: 'low',
+      heading: 'Low',
+      formatter: () => data.low.toFixed(2),
+    },
+    {
+      key: 'change',
+      heading: 'Change (pts)',
+      formatter: () => formatChange(data.change),
+    },
+    {
+      key: 'changePercentage',
+      heading: 'Change %',
+      formatter: () => formatChange(data.changePercentage),
+    },
+  ]
+}
+
+const header = '<thead><tr>' + getColumns().reduce((str, { heading }, i) => {
+  return str += `<th>${heading}</th>`
 }, '') + '</tr></thead>'
 
 const rows = '<tbody>' + markets.reduce((str, market, i) => {
   return str += `<tr id=market${i}></tr>`
 }, '') + '</tbody>'
+
 
 window.onload = () => {
 
@@ -35,55 +86,45 @@ window.onload = () => {
 
   markets.forEach((m, i) => {
 
-    m.subscribe(market => {
+    buildRow(getColumns().map(c => c.key).reduce((acc, key) => Object.assign(acc, {
+      [key]: getColumns(m.snapshot).find(d => d.key === key).formatter()
+    }), {}), i)
 
-      const {
-        name,
-        buy,
-        sell,
-        high,
-        low,
-        change,
-        changePercentage,
-      } = market
-
-      const [previousBuy] = market.history.buy
-      const bullish = previousBuy < buy
-      const bearish = previousBuy > buy
-
-      render([
-        `${name} ${sparkline(market.history.midPrice)}`,
-        formatPrice(buy, bullish, bearish),
-        formatPrice(sell, bullish, bearish),
-        high.toFixed(2),
-        low.toFixed(2),
-        formatChange(change),
-        formatChange(changePercentage),
-      ], i)
-
+    m.subscribe(d => {
+      updateRow(d, i)
     })
-  });
+
+  })
 
 }
 
-const span = (color, content) => `<span class=${color}>${content}</span>`;
-
-const render = (data, rowIndex) => {
-  data.index = rowIndex;
-  document.querySelector(`#market${rowIndex}`).innerHTML = data.reduce((str, d, i) => {
-    return str += `<td>${d}</td>`;
-  }, '');
+const buildRow = (data, rowIndex) => {
+  let str = ''
+  for (let d in data) {
+    str += `<td class=${d}>${data[d]}</td>`
+  }
+  document.querySelector(`#market${rowIndex}`).innerHTML = str;
 }
+
+const updateRow = (data, i) => {
+  for (let key in data) {
+    if (document.querySelectorAll(`.${key}`).length) {
+      document.querySelector(`#market${i} .${key}`).innerHTML =
+        getColumns(data).find(d => d.key === key).formatter()
+    }
+  }
+}
+
+const colorSpan = (color, content) => `<span class=${color}>${content}</span>`;
 
 const formatPrice = (num, bullish, bearish) => {
   let color = 'white'
   if (bullish) {
     color = 'red'
-  }
-  if (bearish) {
+  } else if (bearish) {
     color = 'blue'
   }
-  return span(
+  return colorSpan(
     color,
     num.toFixed(2)
   )
@@ -91,5 +132,5 @@ const formatPrice = (num, bullish, bearish) => {
 
 const formatChange = num => {
   const color = (num > 0) ? 'blue' : 'red'
-  return span(color, num.toFixed(2))
+  return colorSpan(color, num.toFixed(2))
 }

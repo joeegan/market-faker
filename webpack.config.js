@@ -16,17 +16,19 @@ const config = {
     },
   },
   module: {
-    rules: [{
-      test: /\.js$/,
-      include: path.resolve(__dirname, 'src'),
-      use: [{
-        loader: 'babel-loader',
-        options: {
-          presets:             ['es2017', 'stage-3'],
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2017', 'stage-3']
+          }
         }
-      }]
-    }]
-  },
+      }
+    ]
+  }
 }
 
 module.exports = config
