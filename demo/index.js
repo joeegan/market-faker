@@ -20,7 +20,7 @@ const markets = [
   }),
 ]
 
-const getColumns = data => {
+const getColumns = (data, i=0) => {
   let bullish, bearish;
   if (data) {
     const [previousBuy] = data.history.buy
@@ -68,7 +68,10 @@ const getColumns = data => {
       heading: 'Change %',
       formatter: () => formatChange(data.changePercentage),
     },
-  ]
+  ].map(col => {
+    col.dom = document.querySelector(`#market${i} .${col.key}`)
+    return col
+  })
 }
 
 const header = '<thead><tr>' + getColumns().reduce((str, { heading }, i) => {
@@ -86,9 +89,16 @@ window.onload = () => {
 
   markets.forEach((m, i) => {
 
-    buildRow(getColumns().map(c => c.key).reduce((acc, key) => Object.assign(acc, {
-      [key]: getColumns(m.snapshot).find(d => d.key === key).formatter()
-    }), {}), i)
+    buildRow(
+      getColumns(m.snapshot, i)
+        .map(c => c.key)
+        .reduce((acc, key) => Object.assign(acc, {
+          [key]: getColumns(m.snapshot, i)
+                   .find(d => d.key === key)
+                   .formatter()
+        }), {}),
+      i
+    )
 
     m.subscribe(d => {
       updateRow(d, i)
@@ -108,9 +118,9 @@ const buildRow = (data, rowIndex) => {
 
 const updateRow = (data, i) => {
   for (let key in data) {
-    if (document.querySelectorAll(`.${key}`).length) {
-      document.querySelector(`#market${i} .${key}`).innerHTML =
-        getColumns(data).find(d => d.key === key).formatter()
+    const col = getColumns(data, i).find(d => d.key === key)
+    if (col) {
+      col.dom.innerHTML = col.formatter()
     }
   }
 }
