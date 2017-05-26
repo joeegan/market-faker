@@ -1,12 +1,13 @@
 {
   "main": "index.js",
   "name": "market-faker",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simulates financial markets",
+  "repository": "https://github.com/joeegan/market-faker.git",
   "scripts": {
     "start-terminal": "node demo/terminal.js",
     "start-browser": "webpack-dev-server --open",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +24,12 @@
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-preset-es2017": "^6.24.1",
-    "babel-preset-stage-3": "^6.24.1"
+    "babel-preset-stage-3": "^6.24.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-config-recommended": "^1.5.0",
+    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-immutable": "^1.0.0",
+    "eslint-plugin-import": "^2.3.0"
   }
 }
