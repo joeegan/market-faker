@@ -1,10 +1,10 @@
 ![Screencast](https://raw.githubusercontent.com/joeegan/market-faker/master/animation.gif)
 
-This npm module provides simulated financial market data.
+market-faker provides simulated financial market data.
 
 ## Motivation
 
-To use financial data that is not reliant on external sources to avoid problems such as API key expiry, out-of-hours markets, data limits, downtime, and fees
+Legitimate external sources for financial instruments can be cumbersome to use and can incur problems related to API key expiry, restrictive hours of availability, data limits, service downtime, and fees.
 
 ## Usage
 
@@ -12,7 +12,7 @@ To use financial data that is not reliant on external sources to avoid problems 
 yarn add market-faker
 ```
 
-```
+```javascript
 import market from 'market-faker'
 
 const foo = market({
