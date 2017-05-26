@@ -44,7 +44,6 @@ const getSnapshot = ({ name, opening, history }) => {
 }
 
 const tick = (data, snapshot) => {
-  const prevData = Object.assign({}, data)
   const { high, low, history } = data
   const priceMovement = getPriceMovement()
   let midPrice = +(either(data.buy, data.sell))
@@ -53,17 +52,19 @@ const tick = (data, snapshot) => {
   }
   const buy = getBuy(midPrice, priceMovement)
   const sell = getSell(midPrice, priceMovement)
-  const newData = Object.assign({}, data, {
+  const newData = {
+    ...data,
     buy,
     sell,
     midPrice,
     history,
+    // TODO check whether snapshot.high/low should not be required for anything other than tick 1
     high: Math.max(high || snapshot.high, buy),
     low: Math.min(low || snapshot.low, sell),
     change: getChange(snapshot.opening, buy),
     changePercentage: getChangePercentage(snapshot.opening, buy),
-  })
-  return Object.assign({ history }, objectDiff(prevData, newData))
+  }
+  return Object.assign({}, { history }, objectDiff(data, newData))
 }
 
 // Finance utils
@@ -83,7 +84,6 @@ const getPriceMovement = () =>
   _.random(0.1, 5)
 
 // Utils
-
 const objectDiff = (o1, o2) => (Object.keys(o2).reduce((diff, key) => {
   if (o1[key] === o2[key]) return diff
   return {

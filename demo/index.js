@@ -89,13 +89,13 @@ window.onload = () => {
 
   markets.forEach((m, i) => {
 
+    const columns = getColumns(m.snapshot, i)
+
     buildRow(
       getColumns(m.snapshot, i)
-        .map(c => c.key)
-        .reduce((acc, key) => Object.assign(acc, {
-          [key]: getColumns(m.snapshot, i)
-                   .find(d => d.key === key)
-                   .formatter()
+        .reduce((o, col) => ({
+          ...o,
+          [col.key]: col.formatter()
         }), {}),
       i
     )
@@ -118,14 +118,16 @@ const buildRow = (data, rowIndex) => {
 
 const updateRow = (data, i) => {
   for (let key in data) {
-    const col = getColumns(data, i).find(d => d.key === key)
+    const col = getColumns(data, i)
+                  .find(d => d.key === key)
     if (col) {
       col.dom.innerHTML = col.formatter()
     }
   }
 }
 
-const colorSpan = (color, content) => `<span class=${color}>${content}</span>`;
+const colorSpan = (color, content) =>
+  `<span class=${color}>${content}</span>`;
 
 const formatPrice = (num, bullish, bearish) => {
   let color = 'white'
