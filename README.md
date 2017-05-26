@@ -4,7 +4,7 @@ market-faker provides simulated financial market data.
 
 ## Motivation
 
-Legitimate external sources for financial instruments can be cumbersome to use and can incur problems related to API key expiry, restrictive hours of availability, data limits, service downtime, and fees.
+Legitimate external sources for financial instruments can incur problems related to API key expiry, restrictive hours of availability, data limits, service downtime, and fees.
 
 ## Usage
 
