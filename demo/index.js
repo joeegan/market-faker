@@ -30,12 +30,10 @@ const getColumns = (data, i=0) => {
   return [
     {
       key: 'name',
-      heading: '',
       formatter: () => data.name,
     },
     {
       key: 'history',
-      heading: '',
       formatter: () => sparkline(data.history.midPrice)
     },
     {
@@ -68,13 +66,13 @@ const getColumns = (data, i=0) => {
       heading: 'Change %',
       formatter: () => formatChange(data.changePercentage),
     },
-  ].map(col => {
-    col.dom = document.querySelector(`#market${i} .${col.key}`)
-    return col
-  })
+  ].map(col => ({
+    ...col,
+    dom: document.querySelector(`#market${i} .${col.key}`),
+  }))
 }
 
-const header = '<thead><tr>' + getColumns().reduce((str, { heading }, i) => {
+const header = '<thead><tr>' + getColumns().reduce((str, { heading='' }, i) => {
   return str += `<th>${heading}</th>`
 }, '') + '</tr></thead>'
 
@@ -88,8 +86,6 @@ window.onload = () => {
   document.querySelector('table').innerHTML = header + rows;
 
   markets.forEach((m, i) => {
-
-    const columns = getColumns(m.snapshot, i)
 
     buildRow(
       getColumns(m.snapshot, i)
@@ -113,6 +109,7 @@ const buildRow = (data, rowIndex) => {
   for (let d in data) {
     str += `<td class=${d}>${data[d]}</td>`
   }
+  // TODO return str so innerHTML happens once
   document.querySelector(`#market${rowIndex}`).innerHTML = str;
 }
 
