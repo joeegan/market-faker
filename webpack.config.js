@@ -1,34 +1,34 @@
 const webpack = require('webpack')
 const path = require('path')
 
-const config = {
-  context: path.resolve(__dirname, 'demo'),
-  entry: './index.js',
-  output: {
-    path: path.resolve(__dirname, 'demo'),
-    filename: 'bundle.js'
-  },
-  devtool: 'source-map',
-  devServer: {
-    contentBase: './demo',
-    watchOptions: {
-      poll: true
+module.exports = (env) => {
+  return {
+    context: path.resolve(__dirname, env),
+    entry: './index.js',
+    output: {
+      path: path.resolve(__dirname, env),
+      filename: 'bundle.js'
     },
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['es2017', 'stage-3']
+    devtool: 'source-map',
+    devServer: {
+      contentBase: `./${env}`,
+      watchOptions: {
+        poll: true
+      },
+    },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /(node_modules)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['es2017', 'stage-3']
+            }
           }
         }
-      }
-    ]
+      ]
+    }
   }
 }
-
-module.exports = config

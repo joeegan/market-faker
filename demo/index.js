@@ -7,7 +7,7 @@ const history = {
   midPrice: 18,
 }
 
-const markets = [
+export const markets = [
   market({
     name: 'Foobar PLC',
     opening: 1271.0,
@@ -71,6 +71,7 @@ window.onload = () => {
 
   markets.forEach((m, i) => {
     m.subscribe(d => {
+      console.log(d);
       updateRow(d, i)
     })
   })
