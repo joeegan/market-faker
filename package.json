@@ -5,9 +5,9 @@
   "description": "Simulates financial markets",
   "repository": "https://github.com/joeegan/market-faker.git",
   "scripts": {
-    "start-exercise": "webpack-dev-server --open --env=exercise",
-    "test-exercise": "jest ./exercise",
     "start": "webpack-dev-server --open --env=demo",
+    "start-exercise": "webpack-dev-server --open --env=exercise",
+    "test-exercise": "jest ./exercise --watch",
     "test": "jest --no-watchman"
   },
   "author": "",

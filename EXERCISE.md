@@ -35,34 +35,14 @@ Example markup result, which you can use as a reference:
    </thead>
    <tbody>
       <tr>
-         <td class="name">Foobar PLC</td>
-         <td class="history">▁▂▃▄▄▅▆▇▆▆▆▇▇▇▆▇█▆</td>
-         <td class="sell"><span class="blue">1277.68</span></td>
-         <td class="buy"><span class="blue">1285.26</span></td>
-         <td class="high">1285.26</td>
-         <td class="low">1267.12</td>
-         <td class="change"><span class="red">-14.26</span></td>
-         <td class="changePercentage"><span class="blue">101.12</span></td>
-      </tr>
-      <tr>
-         <td class="name">Bazqux PLC</td>
-         <td class="history">▂▂▂▁▂▄▃▃▄▄▄▅▆▇▇▆▆█</td>
-         <td class="sell"><span class="red">4537.32</span></td>
-         <td class="buy"><span class="red">4540.44</span></td>
-         <td class="high">4540.44</td>
-         <td class="low">4499.06</td>
-         <td class="change"><span class="red">-40.44</span></td>
-         <td class="changePercentage"><span class="blue">100.90</span></td>
-      </tr>
-      <tr>
-         <td class="name">GBP/USD</td>
-         <td class="history">▁▂▂▂▂▂▂▁▂▃▄▄▅▆▅▄▆█</td>
-         <td class="sell"><span class="red">14506.00</span></td>
-         <td class="buy"><span class="red">14509.62</span></td>
-         <td class="high">14509.62</td>
-         <td class="low">14499.59</td>
-         <td class="change"><span class="red">-9.62</span></td>
-         <td class="changePercentage"><span class="blue">100.07</span></td>
+         <td>Foobar PLC</td>
+         <td>▁▂▃▄▄▅▆▇▆▆▆▇▇▇▆▇█▆</td>
+         <td><span>1277.68</span></td>
+         <td><span>1285.26</span></td>
+         <td>1285.26</td>
+         <td>1267.12</td>
+         <td><span>-14.26</span></td>
+         <td><span>101.12</span></td>
       </tr>
    </tbody>
 </table>
