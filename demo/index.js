@@ -15,12 +15,57 @@ export const markets = [
   }),
   market({
     name: 'Bazqux PLC',
+    opening: 1500.0,
+    history,
+  }),
+  market({
+    name: 'CNY/USD',
+    opening: 14500.0,
+    history,
+  }),
+  market({
+    name: 'Duckbill PLC',
+    opening: 271.0,
+    history,
+  }),
+  market({
+    name: 'Beer bear Holdings',
     opening: 4500.0,
     history,
   }),
   market({
-    name: 'GBP/USD',
+    name: 'Bitcoin',
+    opening: 2000.0,
+    history,
+  }),
+  market({
+    name: 'Litecoin',
+    opening: 1271.0,
+    history,
+  }),
+  market({
+    name: 'Brian Mills Securities',
+    opening: 1500.0,
+    history,
+  }),
+  market({
+    name: 'Flamingo Holdings',
     opening: 14500.0,
+    history,
+  }),
+  market({
+    name: 'Haribo Holdings',
+    opening: 1071.0,
+    history,
+  }),
+  market({
+    name: 'Wonton PLC',
+    opening: 4001.0,
+    history,
+  }),
+  market({
+    name: 'Leisurewood Hills Ltd',
+    opening: 1430.0,
     history,
   }),
 ]
@@ -71,7 +116,6 @@ window.onload = () => {
 
   markets.forEach((m, i) => {
     m.subscribe(d => {
-      console.log(d);
       updateRow(d, i)
     })
   })

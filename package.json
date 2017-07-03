@@ -6,8 +6,6 @@
   "repository": "https://github.com/joeegan/market-faker.git",
   "scripts": {
     "start": "webpack-dev-server --open --env=demo",
-    "start-exercise": "webpack-dev-server --open --env=exercise",
-    "test-exercise": "jest ./exercise --watch",
     "test": "jest --no-watchman"
   },
   "author": "",
