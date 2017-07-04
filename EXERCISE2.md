@@ -10,6 +10,5 @@ Refrain from using any libs.
 Challenges:
 
 1. Add a range column which denotes the difference between the high and low, situated next to Low
-2. Add dynamic sorting by range. The table will become a volatility index with largest range determining most volatile.
-This should be
-3. Add adequate code coverage
+2. Sort by the range using the snapshot data only, with tests
+4. Explore approaches to sorting by range using streamed data
