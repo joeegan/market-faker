@@ -64,7 +64,6 @@ const tick = (data, snapshot) => {
     sell,
     midPrice,
     history,
-    // TODO check whether snapshot.high/low should not be required for anything other than tick 1
     high: Math.max(high || snapshot.high, buy),
     low: Math.min(low || snapshot.low, sell),
     change: getChange(snapshot.opening, buy),
